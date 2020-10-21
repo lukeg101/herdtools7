@@ -32,14 +32,20 @@ open MemOrderOrAnnot
 %token <string> CODEVAR
 %token <int> PROC
 %token LPAR RPAR COMMA LBRACE RBRACE STAR
-%token ATOMIC CHAR INT LONG VOID
+%token ATOMIC ATOMIC_BASE CHAR INT LONG VOID
 %token MUTEX
 %token VOLATILE
 %token STRUCT
 
+/* Needed for memory mapped regions */
+%token COLON SCOPES LEVELS REGIONS
+/* Tokens only needed so we can reuse bellextrarules */
+%token <string> NAME
+%token <int> NUM
+
 /* For shallow parsing */
 %token <string> BODY
-%type <string CAst.t list> shallow_main
+%type <string CAst.t list * MiscParser.extra_data> shallow_main
 %start shallow_main
 
 /* For deep parsing */
@@ -69,7 +75,7 @@ open MemOrderOrAnnot
 %nonassoc CAST
 %nonassoc PREC_BASE
 
-%type <(CBase.pseudo list) CAst.test list> deep_main
+%type <(CBase.pseudo list) CAst.test list * MiscParser.extra_data> deep_main
 %start deep_main
 
 %type <CBase.pseudo list> pseudo_seq
@@ -105,6 +111,7 @@ typ:
 
 base0:
 | ATOMIC_TYPE { Atomic (Base $1) }
+| ATOMIC_BASE LT BASE_TYPE GT { Atomic (Base $3) }
 | BASE_TYPE { (Base $1) }
 | STRUCT STRUCT_TYPE { Base ("struct " ^ $2) }
 | ty_attr MUTEX { Base ($1 ^ "mutex") }
@@ -121,10 +128,11 @@ ty_attr:
 | { "" }
 
 shallow_main:
-| EOF { [] }
-| BODY shallow_main { CAst.Global $1 :: $2 }
+| scopes_and_memory_map EOF { [], MiscParser.BellExtra $1 }
+| BODY shallow_main { CAst.Global $1 :: (fst $2), (snd $2) }
 | voidopt PROC LPAR parameter_list RPAR BODY shallow_main
-    { CAst.Test {CAst.proc = $2; params = $4; body = $6} :: $7 }
+    { CAst.Test {CAst.proc = $2; params = $4; body = $6} :: (fst $7),
+      (snd $7) }
 
 voidopt:
 | VOID { () }
@@ -307,7 +315,7 @@ trans_unit:
   { $1 @ [$2] }
 
 deep_main:
-| trans_unit EOF { $1 }
+| trans_unit scopes_and_memory_map EOF { $1, MiscParser.BellExtra $2 }
 
 formals_ne:
 | IDENTIFIER { [ $1 ] }

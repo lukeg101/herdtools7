@@ -35,7 +35,7 @@ type
      ffaults : 'fset;
      observed : 'locset ;
      displayed : 'locset ;
-     extra_data : MiscParser.extra_data ;
+     extra_data : MiscParser.extra_data list;
      access_size : MachSize.sz list ;
      proc_info : proc_info ;
    }

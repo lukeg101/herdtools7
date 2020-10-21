@@ -156,7 +156,7 @@ let check_regs = GenParserUtils.check_regs
          filter = filter;
          condition = final;
          locations = locs;
-         extra_data = MiscParser.empty_extra;
+         extra_data = [MiscParser.empty_extra];
        } in
       let name  = name.Name.name in
       let parsed =

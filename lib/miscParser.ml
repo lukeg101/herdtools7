@@ -178,7 +178,7 @@ type ('i, 'p, 'prop, 'loc, 'v) result =
       filter : 'prop option ;
       condition : 'prop ConstrGen.constr ;
       locations : ('loc,'v) LocationsItem.t list ;
-      extra_data : extra_data ;
+      extra_data : extra_data list ;
 }
 
 (* Easier to handle *)
