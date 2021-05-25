@@ -1,0 +1,10 @@
+Test A14 Allowed
+States 1
+x=0x100000000;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition exists (x=0x100000000)
+Observation A14 Always 1 0
+Hash=9089f4ae66e1a6cd2953c77e864cd058
+

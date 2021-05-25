@@ -1,0 +1,10 @@
+Test A10 Allowed
+States 1
+x=1;
+Ok
+Witnesses
+Positive: 1 Negative: 0
+Condition exists (x=1)
+Observation A10 Always 1 0
+Hash=b9ac73a07efb7e92c5e98bed9b3b3505
+
