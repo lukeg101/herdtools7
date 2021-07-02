@@ -1070,7 +1070,7 @@ let do_pp_instruction m =
   | I_LDUR (_,r1,r2,None) ->
       sprintf "LDUR %s, [%s]" (pp_reg r1) (pp_reg r2)
   | I_LDUR (_,r1,r2,Some(k)) ->
-      sprintf "LDUR %s, [%s, #%s]" (pp_reg r1) (pp_reg r2) (m.pp_k k)
+      sprintf "LDUR %s, [%s, %s]" (pp_reg r1) (pp_reg r2) (m.pp_k k)
   | I_LDR_P (v,r1,r2,k) ->
       pp_mem_post "LDR" v r1 r2 k
   | I_LDP (t,v,r1,r2,r3,k) ->
