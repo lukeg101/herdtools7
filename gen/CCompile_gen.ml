@@ -850,8 +850,6 @@ module Make(O:Config) : Builder.S
         | AddZero (e,loc) ->
             sprintf "%s + (%s & 128)"
               (dump_exp e) (dump_loc_exp loc)
-        | AtomicLoad (MemOrder.SC,loc) ->
-            sprintf "atomic_load(%s)" (dump_exp loc)
         | AtomicLoad (mo,loc) ->
             sprintf "atomic_load_explicit(%s,%s)"
               (dump_exp loc) (dump_mem_order mo)
@@ -895,9 +893,6 @@ module Make(O:Config) : Builder.S
               (A.dump_typ t) (A.dump_reg r) (dump_exp e)
         | Store (loc,e) ->
             fx chan i "*%s = %s;" (dump_left_val loc) (dump_exp e)
-        | AtomicStore (MemOrder.SC,loc,e) ->
-            fx chan i "atomic_store(%s,%s);"
-              (dump_exp loc) (dump_exp e)
         | SetReg (r,e) ->
             fx chan i "%s = %s;" (A.dump_reg r) (dump_exp e)
         | AtomicStore (mo,loc,e) ->
