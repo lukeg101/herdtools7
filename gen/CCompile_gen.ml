@@ -927,6 +927,9 @@ module Make(O:Config) : Builder.S
 
 
       let dump_proc_code chan p (a,i) =
+        let addret = O.variant Variant_gen.AddRet in
+        if addret then
+          fprintf chan "void *";
         fprintf chan "%s (%s) {\n" (pp_proc p) (dump_args a) ;
         dump_ins chan indent1 i ;
         fprintf chan "}\n" ;

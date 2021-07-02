@@ -28,6 +28,8 @@ type t =
   | MemTag
 (* C: Prevents the use of Volatile to capture bugs in compilation *)
   | NoVolatile
+(* C: Prepends void * type on thread functions - needed to make compilable C *)
+  | AddRet
 (* Morello C64 instruction set *)
   | Morello
 (* Explicit virtual memory *)
