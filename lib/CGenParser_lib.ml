@@ -42,12 +42,12 @@ module type LexParse = sig
   val deep_lexer : Lexing.lexbuf -> token
   val deep_parser :
         (Lexing.lexbuf -> token) -> Lexing.lexbuf ->
-	  pseudo list CAst.test list
+	  pseudo list CAst.test list * MiscParser.extra_data
 
   val shallow_lexer : Lexing.lexbuf -> token
   val shallow_parser :
         (Lexing.lexbuf -> token) -> Lexing.lexbuf ->
-	  string CAst.t list
+	  string CAst.t list * MiscParser.extra_data
 
   type macro
   val macros_parser :
@@ -146,10 +146,10 @@ module Do
 			    (MiscParser.Location_reg (p,loc),
 			     (ty,ParsedConstant.nameToV loc))::env)
 			   env t.params)
-        init prog_litmus in
-    let procs = List.map (fun p -> p.CAst.proc) prog in
+        init (fst prog_litmus) in
+    let procs = List.map (fun p -> p.CAst.proc) (fst prog) in
     check_procs procs ;
-    let params =  List.map (fun p -> p.CAst.params) prog in
+    let params =  List.map (fun p -> p.CAst.params) (fst prog) in
 
     let expand_body = match O.macros with
     | None -> Misc.identity
@@ -167,7 +167,7 @@ module Do
             fname in
         List.map (L.macros_expand ms) in
 
-    let prog =  List.map (fun p -> (p.CAst.proc,None),expand_body p.CAst.body) prog in
+    let prog =  List.map (fun p -> (p.CAst.proc,None),expand_body p.CAst.body) (fst prog) in
 (*
     List.iter
       (fun (p,code) ->
@@ -191,7 +191,7 @@ module Do
         filter = filter;
         condition = final;
         locations = locs;
-        extra_data = MiscParser.CExtra params;
+        extra_data = [MiscParser.CExtra params; (snd prog_litmus)];
       } in
     let name  = name.Name.name in
     let parsed =
@@ -215,7 +215,7 @@ module Do
 	       ("Hash",
 		(* For computing hash, we must parse as litmus does.
                 This includes stripping away toplevel '*' of types *)
-		let prog = List.map CAstUtils.strip_pointers prog_litmus in
+		let prog = List.map CAstUtils.strip_pointers (fst prog_litmus) in
 		D.digest info init prog all_locs)::info ; }
         | Some _ -> parsed in
     parsed

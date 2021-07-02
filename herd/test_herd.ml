@@ -35,7 +35,7 @@ type
      ffaults: 'fset;
      observed : 'locset ;
      displayed : 'locset ;
-     extra_data : MiscParser.extra_data ;
+     extra_data : MiscParser.extra_data list ;
      access_size : MachSize.sz list ;
      proc_info : proc_info ;
    }
@@ -221,7 +221,7 @@ module Make(A:Arch_herd.S) =
        flocs = [] ; ffaults = A.FaultAtomSet.empty;
        observed = A.RLocSet.empty;
        displayed = A.RLocSet.empty;
-       extra_data = MiscParser.empty_extra;
+       extra_data = [MiscParser.empty_extra];
        access_size = [];
        proc_info = [];
      }

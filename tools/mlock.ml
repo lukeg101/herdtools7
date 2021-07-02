@@ -383,17 +383,23 @@ module Top(O:Config)(Out:OutTests.S) = struct
   | Expand -> List.map expand_params
   | Once -> fun pss -> pss
 
-  let tr_parsed tr_ins name t = match t.extra_data with
-  | CExtra pss ->
-      changed := false ;
-      let prog =
-        List.map
-          (fun (i,code) -> i,List.map (CBase.pseudo_map tr_ins) code)
-          t.prog in
-      if not !changed then not_changed name ;
-      let extra_data = CExtra (tr_params pss) in
-      { t with extra_data; prog;}
-  | NoExtra|BellExtra _ -> assert false
+  let tr_parsed tr_ins name t =
+    let extra = t.extra_data in
+    let t_list = List.map
+      (function
+       | CExtra pss ->
+          changed := false ;
+          let prog =
+          List.map
+             (fun (i,code) -> i,List.map (CBase.pseudo_map tr_ins) code)
+             t.prog in
+          if not !changed then not_changed name ;
+          let extra_data = [CExtra (tr_params pss)] in
+           { t with extra_data; prog;}
+       | NoExtra
+       | BellExtra _ -> assert false)
+      extra in
+      List.hd (t_list)
 
 (* Name *)
   let tr_name0 = match O.action with
@@ -427,7 +433,9 @@ module Top(O:Config)(Out:OutTests.S) = struct
         | Once ->
             tr_parsed once_ins name parsed
         | Expand ->
-            begin match parsed.extra_data with
+          begin
+            let extra = parsed.extra_data in
+            let parsed_list = List.map (function
             | CExtra extra ->
                 let extra_data = CExtra (tr_params extra) in
                 changed := false ;
@@ -450,9 +458,13 @@ module Top(O:Config)(Out:OutTests.S) = struct
                               (fun loc -> Atom (LV (Loc loc,const_zero)))
                               vs))
                        locss) in
-                { parsed with prog; extra_data; filter=Some filter;}
-            | NoExtra | BellExtra _ -> assert false
-            end in
+                { parsed with prog;
+                  extra_data=[extra_data];
+                  filter=Some filter;}
+            | NoExtra | BellExtra _ -> assert false)
+            extra in
+            List.hd parsed_list
+          end in
         dump out name parsed ;
         Out.fprintf idx_out "%s\n" base)
       out ;

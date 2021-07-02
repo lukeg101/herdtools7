@@ -25,6 +25,7 @@ module LU = LexUtils.Make(O)
 let tr_name s = match s with
 | "volatile" -> VOLATILE
 | "_Atomic" -> ATOMIC
+| "atomic" -> ATOMIC_BASE
 | "char" -> CHAR
 | "int" -> INT
 | "long" -> LONG
@@ -135,6 +136,7 @@ rule token deep = parse
 | "constvar:" (name as s) { CONSTVAR s }
 | "codevar:" (name as s) { CODEVAR s }
 | '%' name as s { IDENTIFIER s }
+| "regions" { REGIONS }
 | name as x   { tr_name x  }
 | eof { EOF }
 | "" { LexMisc.error "C lexer" lexbuf }

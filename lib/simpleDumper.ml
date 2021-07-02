@@ -107,11 +107,13 @@ end = struct
     | None -> ()
     | Some p -> Out.fprintf chan "filter %s\n" (I.dump_prop p)
     end ;
-    begin match t.extra_data with
-    | NoExtra|CExtra _ -> ()
-    | BellExtra bi ->
+    let print_extra t =
+      begin match t with
+        | NoExtra|CExtra _ -> ()
+        | BellExtra bi     ->
         Out.fprintf chan "\n%s\n" (BellInfo.pp bi)
-    end ;
+      end in
+    let _ = List.map print_extra t.extra_data in
     Out.fprintf chan "%s\n" (I.dump_constr t.condition) ;
     ()
 
